@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Learning Hub</title>
+<meta name="description" content="A local library of Unity and LLM learning resources with detailed summaries, diagrams and a Claude-powered study assistant.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="app" id="app">
+
+  <div class="main">
+    <header class="top">
+      <div class="top-row">
+        <div class="brand">
+          <h1>Learning Hub</h1>
+          <span class="ver" id="subject-ver">Unity 6 · 6.3 LTS</span>
+        </div>
+        <nav class="tabs subjects" role="tablist" aria-label="Subject">
+          <button role="tab" data-subject="unity" aria-selected="true">🎮 Unity</button>
+          <button role="tab" data-subject="llm" aria-selected="false">🧠 LLMs</button>
+        </nav>
+        <nav class="tabs" role="tablist" aria-label="View">
+          <button role="tab" data-view="library" aria-selected="true">Library</button>
+          <button role="tab" data-view="paths" aria-selected="false">Paths</button>
+          <button role="tab" data-view="add" aria-selected="false">+ Add</button>
+        </nav>
+        <button class="icon-btn" id="width" title="Toggle reading width" aria-label="Toggle reading width" aria-pressed="false">↔</button>
+        <button class="icon-btn" id="theme" title="Toggle theme" aria-label="Toggle theme">◐</button>
+      </div>
+      <div class="filters" id="filters">
+        <input class="search" id="search" type="search" placeholder="Search resources, topics, concepts…" aria-label="Search">
+      </div>
+    </header>
+    <main class="content" id="content"></main>
+  </div>
+
+  <aside class="chat" id="chat">
+    <div class="chat-head">
+      <div class="row">
+        <h2>Study assistant</h2>
+        <span class="status" id="status">checking…</span>
+        <button class="icon-btn close-chat" id="close-chat" aria-label="Close assistant">✕</button>
+      </div>
+      <select class="agent" id="agent" aria-label="Select agent"></select>
+      <select class="model" id="model" aria-label="Select model">
+        <option value="claude-opus-5">claude-opus-5 — deepest reasoning</option>
+        <option value="claude-sonnet-5">claude-sonnet-5 — balanced</option>
+        <option value="claude-haiku-4-5-20251001">claude-haiku-4.5 — fastest</option>
+      </select>
+      <div class="agent-blurb" id="agent-blurb"></div>
+    </div>
+
+    <div class="presets" id="presets">
+      <div class="lbl">Preset prompts</div>
+      <div id="preset-list"></div>
+    </div>
+
+    <div class="msgs" id="msgs">
+      <div class="empty" id="empty">
+        Pick an agent, then a preset prompt — or ask anything about Unity.<br><br>
+        Open a resource and the assistant answers in its context.
+      </div>
+    </div>
+
+    <div class="composer">
+      <div id="ctx-wrap"></div>
+      <div class="box">
+        <textarea class="input" id="input" rows="1" placeholder="Ask about Unity…" aria-label="Message"></textarea>
+        <button class="send" id="send" aria-label="Send">↑</button>
+      </div>
+      <div class="hint">Enter to send · Shift+Enter for a new line</div>
+    </div>
+  </aside>
+
+  <button class="chat-toggle" id="open-chat" aria-label="Open assistant">💬</button>
+</div>
+
+<script src="data/resources-1.js"></script>
+<script src="data/resources-2.js"></script>
+<script src="data/resources-3.js"></script>
+<script src="data/diagrams.js"></script>
+<script src="data/agents.js"></script>
+<script src="data/paths.js"></script>
+<script src="data/llm-resources-1.js"></script>
+<script src="data/llm-resources-2.js"></script>
+<script src="data/llm-resources-3.js"></script>
+<script src="data/llm-resources-4.js"></script>
+<script src="data/llm-resources-5.js"></script>
+<script src="data/llm-diagrams.js"></script>
+<script src="data/llm-diagrams-2.js"></script>
+<script src="data/llm-agents.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

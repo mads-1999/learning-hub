@@ -1,0 +1,20 @@
+# Resources added via the + Add tab (personal, may contain private notes)
+data/custom-resources.json
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Scratch
+*.log
+test-*.json
+shot-*.json
