@@ -145,6 +145,18 @@
   /* ---------------- add a resource ---------------- */
   function renderAdd(el) {
     var s = state.subject;
+
+    if (state.online === false) {
+      el.innerHTML =
+        '<div class="detail addpane">' +
+        '<div class="section-head"><h2>Add a resource</h2><span>needs a Claude API key</span></div>' +
+        '<div class="addbox">' + SETUP_HELP + "</div>" +
+        renderCustomList() + "</div>";
+      wireOpens(el);
+      wireCustomDeletes(el);
+      return;
+    }
+
     el.innerHTML =
       '<div class="detail addpane">' +
       '<div class="section-head"><h2>Add a resource</h2><span>paste a link or upload a document — it gets read, summarised and filed</span></div>' +
@@ -473,7 +485,11 @@
     var ver = $("subject-ver");
     if (ver) ver.textContent = SUBJECTS[subject].ver;
     var inp = $("input");
-    if (inp) inp.placeholder = "Ask about " + SUBJECTS[subject].label + "…";
+    if (inp) {
+      inp.placeholder = state.online === false
+        ? "Assistant off — no API key"
+        : "Ask about " + SUBJECTS[subject].label + "…";
+    }
     var empty = $("empty");
     if (empty && state.online !== false) {
       empty.innerHTML = "Pick an agent, then a preset prompt — or ask anything about " +
@@ -547,7 +563,9 @@
     });
     list.innerHTML = h;
     list.querySelectorAll(".preset").forEach(function (b) {
+      b.disabled = state.online === false;
       b.addEventListener("click", function () {
+        if (state.online === false) return;
         $("input").value = b.dataset.p;
         autoSize();
         send();
@@ -630,7 +648,7 @@
   }
 
   function send() {
-    if (state.busy) return;
+    if (state.busy || state.online === false) return;
     var t = $("input");
     var text = t.value.trim();
     if (!text) return;
@@ -675,26 +693,79 @@
   }
 
   /* ---------------- health ---------------- */
+
+  var SETUP_HELP =
+    '<div class="nokey"><strong>The assistant is off.</strong>' +
+    '<p>No Claude API key was found on the server, so the chat and <em>+ Add</em> ' +
+    'are disabled. Everything else — the library, summaries, diagrams and paths — ' +
+    'works without one.</p>' +
+    '<p class="nokey-how">To turn it on, stop the server (Ctrl+C), then:</p>' +
+    '<pre><code>set ANTHROPIC_API_KEY=sk-ant-...\npython server.py</code></pre>' +
+    '<p class="nokey-how">On macOS or Linux use <code>export</code> instead of ' +
+    '<code>set</code>. Get a key at <a href="https://console.anthropic.com" ' +
+    'target="_blank" rel="noopener noreferrer">console.anthropic.com</a>.</p></div>';
+
+  var NO_SERVER_HELP =
+    '<div class="nokey"><strong>No server.</strong>' +
+    '<p>This page is not being served by <code>server.py</code>, so the assistant ' +
+    'and <em>+ Add</em> cannot work. Run <code>python server.py</code> and open ' +
+    '<code>http://localhost:8000</code> rather than the HTML file directly.</p></div>';
+
+  /* Turns the whole assistant panel on or off. Called once health is known,
+     and again whenever the presets are rebuilt. */
+  function setAssistantEnabled(on, help) {
+    state.online = on;
+    ["input", "send", "agent", "model"].forEach(function (id) {
+      var el = $(id);
+      if (el) el.disabled = !on;
+    });
+    document.querySelectorAll(".preset").forEach(function (b) { b.disabled = !on; });
+    var panel = $("chat");
+    if (panel) panel.classList.toggle("is-disabled", !on);
+    var inp = $("input");
+    if (inp) {
+      inp.placeholder = on
+        ? "Ask about " + SUBJECTS[state.subject].label + "…"
+        : "Assistant off — no API key";
+    }
+    if (!on && help) {
+      var e = $("empty");
+      if (e) e.innerHTML = help;
+      else {
+        var msgs = $("msgs");
+        if (msgs && !msgs.querySelector(".nokey")) {
+          var d = document.createElement("div");
+          d.className = "empty";
+          d.id = "empty";
+          d.innerHTML = help;
+          msgs.appendChild(d);
+        }
+      }
+    }
+    // the Add page shares the same requirement
+    if (state.view === "add") renderContent();
+  }
+
   function checkHealth() {
     fetch("/api/health")
       .then(function (r) { return r.json(); })
       .then(function (j) {
-        state.online = !!j.apiKey;
         var s = $("status");
-        if (j.apiKey) { s.textContent = "live"; s.className = "status live"; }
-        else {
-          s.textContent = "offline"; s.className = "status off";
-          var e = $("empty");
-          if (e) {
-            e.innerHTML = "No API key set, so the assistant can't answer yet.<br><br>" +
-              "Stop the server, run <code>export ANTHROPIC_API_KEY=sk-ant-…</code> and start it again.<br><br>" +
-              "Everything else on the site works without a key.";
-          }
+        if (j.apiKey) {
+          s.textContent = "live";
+          s.className = "status live";
+          setAssistantEnabled(true);
+        } else {
+          s.textContent = "no key";
+          s.className = "status off";
+          setAssistantEnabled(false, SETUP_HELP);
         }
       })
       .catch(function () {
         var s = $("status");
-        s.textContent = "no server"; s.className = "status off";
+        s.textContent = "no server";
+        s.className = "status off";
+        setAssistantEnabled(false, NO_SERVER_HELP);
       });
   }
 

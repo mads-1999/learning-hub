@@ -361,6 +361,30 @@ select.model { font-size: 12px; font-family: var(--mono); margin-top: 6px; }
 .empty { color: var(--text-faint); font-size: 13px; text-align: center; margin-top: 36px; line-height: 1.6; padding: 0 12px; }
 .empty code { font-family: var(--mono); font-size: 11.5px; background: var(--bg-sunk); padding: 1px 5px; border-radius: 4px; }
 
+/* ---------- assistant disabled (no API key) ---------- */
+.nokey {
+  text-align: left; border: 1px solid var(--warn); background: var(--warn-soft);
+  border-radius: 10px; padding: 14px 16px; color: var(--text);
+}
+.nokey strong { color: var(--warn); display: block; margin-bottom: 8px; font-size: 13.5px; }
+.nokey p { margin: 0 0 10px; font-size: 12.5px; color: var(--text-dim); line-height: 1.55; }
+.nokey p:last-child { margin-bottom: 0; }
+.nokey pre {
+  background: var(--bg-sunk); border: 1px solid var(--line); border-radius: 8px;
+  padding: 10px 12px; margin: 0 0 10px; overflow-x: auto;
+}
+.nokey pre code { font-family: var(--mono); font-size: 11.5px; background: none; padding: 0; color: var(--accent); white-space: pre; }
+.nokey a { color: var(--accent); }
+
+.chat.is-disabled .presets { opacity: .45; pointer-events: none; }
+.chat.is-disabled .composer { opacity: .55; }
+.chat.is-disabled .agent, .chat.is-disabled .model { opacity: .55; }
+textarea.input:disabled, .send:disabled, select:disabled, .preset:disabled, .btn:disabled {
+  cursor: not-allowed;
+}
+textarea.input:disabled::placeholder { color: var(--text-faint); }
+.addpane .nokey { margin: 0; }
+
 .composer { border-top: 1px solid var(--line); padding: 12px 18px 16px; }
 .ctx-tag {
   font-size: 11px; font-family: var(--mono); color: var(--accent-2);
